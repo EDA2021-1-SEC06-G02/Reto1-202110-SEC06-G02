@@ -33,8 +33,8 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 # Funciones para la carga de datos
 
-def initCatalog(estructuraDeDatos):
-    return model.newCatalog(estructuraDeDatos)
+def initCatalog():
+    return model.newCatalog()
 
 def loadData(catalog):
     loadVideos(catalog)
@@ -54,8 +54,14 @@ def loadCategories(catalog):
 
 # Funciones de ordenamiento
 
-def VideosByViews(catalog, numElementos, TipoAlgortimo):
-    return model.VideosByViews(catalog, numElementos, TipoAlgortimo)
+def VideosByViews(catalog, numElementos):
+    return model.VideosByViews(catalog, numElementos)
+
+def OrdenCatalogoPaises(catalog):
+    return model.VideosByCountry(catalog)
+
+def VideoPaisConMasTendencia(catalog,paisInteres):
+    return model.VideoPaisConMasTendencia(catalog, paisInteres)
 
 
 
