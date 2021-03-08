@@ -68,6 +68,12 @@ def printResultVideosByViews(listaOrdenada, paisInteres,sample=10):
 def VideoPaisConMasTendencia(catalog,paisInteres):
     return controller.VideoPaisConMasTendencia(catalog,paisInteres)
 
+def printTodasLasCategorias(catalog):
+    i=1
+    while i<=lt.size(catalog['category']):
+        print(i,'-ID: ',lt.getElement(catalog['category'],i)['Category_id'],'; Name: ',lt.getElement(catalog['category'],i)['name'])
+        i+=1
+
 """
 Menu principal
 """
@@ -81,9 +87,11 @@ while True:
         loadData(catalog)
         t2 = time.process_time()
         time_mseg = (t2 - t1)*1000
-        print ("Tiempo de ejecucion: ",time_mseg," milisegundos.")
         print('Videos cargados exitósamente: ' + str(lt.size(catalog['video'])))
-        print('Categorias cargadas exitósamente: ' + str(lt.size(catalog['category'])))
+        video=lt.getElement(catalog['video'],1)
+        print('1- Titulo: '+ video['title'],'; Nombre del Canal: ', video['channel_title'], 'Fecha de tendencia: ',video['trending_date'],'; Visitas del Video: ', video['views'],'; Likes del Video: ',video['likes'],'; Dislikes del Video: ',video['dislikes'])
+        printTodasLasCategorias(catalog)
+        print ("Tiempo de ejecucion: ",time_mseg," milisegundos.")
 
     elif inputs == 2:
         if len(catalog)==0:
