@@ -29,8 +29,6 @@ import csv
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
-# Inicialización del Catálogo de libros
-
 # Funciones para la carga de datos
 
 def initCatalog():
@@ -60,9 +58,10 @@ def OrdenCatalogoPaises(catalog):
 def VideoPaisConMasTendencia(catalog,paisInteres):
     return model.VideoPaisConMasTendencia(catalog, paisInteres)
 
-def VideosConMasViewsPorPais(catalog,paisInteres):
-    return model.VideosConMasViewsPorPais(catalog,paisInteres)
-
-
+def VideosConMasViewsPorPais(catalog,paisInteres,idCategoria):
+    return model.VideosConMasViewsPorPais(catalog,paisInteres,idCategoria)
 
 # Funciones de consulta sobre el catálogo
+
+def asignarNombreCategoryToID(catalog,elemento):
+    return model.asignarNombreCategoryToID(catalog,elemento)

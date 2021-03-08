@@ -58,12 +58,11 @@ def addCategory(catalog, category):
 def newCategory(id, name):
     Category = {'Category_id': '', 'name': ''}
     Category['Category_id'] = id
-    Category['name'] = name
+    Category['name'] = name.strip()
     return Category
 
 
 # Funciones para agregar informacion al catalogo
-
 
 # Funciones para creacion de datos
 
@@ -97,33 +96,40 @@ def busquedaBinariaID(listaOrdenada, elemento):
             i = m + 1
     return -1
 
-def subListaDePais(listaOrdenada,index,elemento):
+def busquedaBinariaCategoryID(listaOrdenada, elemento):
+    i, lon = 1, lt.size(listaOrdenada)
+    while i <= lon:
+        m = (i + lon) // 2
+        EM = lt.getElement(listaOrdenada,m)['category_id']
+        if EM == elemento:
+            return m
+        elif elemento < EM:
+            lon = m - 1
+        else:
+            i = m + 1
+    return -1
+
+def busquedaBinariaCategory_Name(listaOrdenada, elemento):
     elemento=elemento.lower()
-    i=index-1
-    l=index+1
-    limIzq=0
-    limDer=lt.size(listaOrdenada)
-    VerIzq=True
-    VerDer=True
-    while i >= 0 and VerIzq:
-        if not(lt.getElement(listaOrdenada,i)['country'].lower()==elemento):
-            VerIzq=False
-            if i==0:
-                limIzq=i
-            else:
-                limIzq=i+1
-        i-=1
-    while l <= lt.size(listaOrdenada) and VerDer:
-        if not(lt.getElement(listaOrdenada,l)['country'].lower()==elemento):
-            VerDer=False
-            if l==lt.size(listaOrdenada):
-                limDer=l
-            else:
-                limDer=l-1
-        l+=1
-    sub_list = lt.subList(listaOrdenada, limIzq, limDer-limIzq)
-    sub_list = sub_list.copy()
-    return sub_list
+    i, lon = 1, lt.size(listaOrdenada)
+    while i <= lon:
+        m = (i + lon) // 2
+        EM = lt.getElement(listaOrdenada,m)['name'].lower()
+        if EM == elemento:
+            return m
+        elif elemento < EM:
+            lon = m - 1
+        else:
+            i = m + 1
+    return -1
+
+def asignarNombreCategoryToID(catalog,elemento):
+    categoryName=CategoryByName(catalog)
+    index=busquedaBinariaCategory_Name(categoryName,elemento)
+    if (index==-1):
+        return index
+    category_id=lt.getElement(categoryName,index)['Category_id']
+    return category_id
 
 def VideoPaisConMasTendencia(listaOrdenada,paisInteres):
     indexProvi=busquedaBinariaPaises(listaOrdenada,paisInteres)
@@ -157,14 +163,72 @@ def VideoConMasDiasEnTendencia(listaOrdenID):
 def VideoConMasTendencia(listaOrdenada):
     return VideosByID(listaOrdenada)
 
-def VideosConMasViewsPorPais(listaOrdenada,paisInteres):
+def VideosConMasViewsPorPais(listaOrdenada,paisInteres,idCategoria):
     indexProvi=busquedaBinariaPaises(listaOrdenada,paisInteres)
     if(indexProvi==-1):
-        return -1,0
+        return -1
     else:
         listaSoloPaises=subListaDePais(listaOrdenada,indexProvi,paisInteres)
-        listaPaisViews=VideosByViews(listaSoloPaises)
+        listaOrdenadaCategoria=VideosByCategoryID(listaSoloPaises)
+        indexCategory=busquedaBinariaCategoryID(listaOrdenadaCategoria,idCategoria)
+        listaSoloCategoria=subListaDeCategories(listaOrdenadaCategoria,indexCategory,idCategoria)
+        listaPaisViews=VideosByViews(listaSoloCategoria)
     return listaPaisViews
+
+def subListaDePais(listaOrdenada,index,elemento):
+    elemento=elemento.lower()
+    i=index-1
+    l=index+1
+    limIzq=0
+    limDer=lt.size(listaOrdenada)
+    VerIzq=True
+    VerDer=True
+    while i >= 0 and VerIzq:
+        if not(lt.getElement(listaOrdenada,i)['country'].lower()==elemento):
+            VerIzq=False
+            if i==0:
+                limIzq=i
+            else:
+                limIzq=i+1
+        i-=1
+    while l <= lt.size(listaOrdenada) and VerDer:
+        if not(lt.getElement(listaOrdenada,l)['country'].lower()==elemento):
+            VerDer=False
+            if l==lt.size(listaOrdenada):
+                limDer=l
+            else:
+                limDer=l-1
+        l+=1
+    sub_list = lt.subList(listaOrdenada, limIzq, limDer-limIzq)
+    sub_list = sub_list.copy()
+    return sub_list
+
+def subListaDeCategories(listaOrdenada,index,elemento):
+    i=index-1
+    l=index+1
+    limIzq=0
+    limDer=lt.size(listaOrdenada)
+    VerIzq=True
+    VerDer=True
+    while i >= 0 and VerIzq:
+        if not(lt.getElement(listaOrdenada,i)['category_id']==elemento):
+            VerIzq=False
+            if i==0:
+                limIzq=i
+            else:
+                limIzq=i+1
+        i-=1
+    while l <= lt.size(listaOrdenada) and VerDer:
+        if not(lt.getElement(listaOrdenada,l)['category_id']==elemento):
+            VerDer=False
+            if l==lt.size(listaOrdenada):
+                limDer=l
+            else:
+                limDer=l-1
+        l+=1
+    sub_list = lt.subList(listaOrdenada, limIzq, limDer-limIzq)
+    sub_list = sub_list.copy()
+    return sub_list
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -177,6 +241,12 @@ def cmpByCountry(video1, video2):
 
 def cmpByID(video1, video2):
     return ((video1['video_id']).lower() < (video2['video_id']).lower())
+
+def cmpByCategoryID(video1, video2):
+    return ((video1['category_id']).lower() < (video2['category_id']).lower())
+
+def cmpCategoryByName(categoria1, categoria2):
+    return ((categoria1['name']).lower() < (categoria2['name']).lower())
 
 # Funciones de ordenamiento
 
@@ -198,7 +268,17 @@ def VideosByID(listaOrdenada):
     sorted_list = Merge.sort(sub_list, cmpByID)
     return sorted_list
 
+def VideosByCategoryID(listaOrdenada):
+    sub_list = lt.subList(listaOrdenada, 0, lt.size(listaOrdenada))
+    sub_list = sub_list.copy()
+    sorted_list = Merge.sort(sub_list, cmpByCategoryID)
+    return sorted_list
 
+def CategoryByName(catalog):
+    sub_list = lt.subList(catalog['category'], 0, lt.size(catalog['category']))
+    sub_list = sub_list.copy()
+    sorted_list = Merge.sort(sub_list, cmpCategoryByName)
+    return sorted_list
 
 
 

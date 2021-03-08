@@ -62,7 +62,7 @@ def printResultVideosByViews(listaOrdenada, paisInteres,sample=10):
         i=1
         while i<= sample:
             video = lt.getElement(listaOrdenada,i)
-            print(i,'- Titulo: '+ video['title'] + '. Visitas del Video: ' + video['views'] + '. Nombre del Canal: ' + video['channel_title']+'.')
+            print(i,'- Fecha de tendencia: ',video['trending_date'],'; Titulo: '+ video['title'],'; Nombre del Canal: ', video['channel_title'], '; Fecha de publicación', video['publish_time'],'; Visitas del Video: ', video['views'],'; Likes del Video: ',video['likes'],'; Dislikes del Video: ',video['dislikes'])
             i+=1
 
 def VideoPaisConMasTendencia(catalog,paisInteres):
@@ -101,12 +101,17 @@ while True:
                 tiempoO = (stop_time - start_time)*1000
                 print("El tiempo de ejecución del ordenamiento es: ",tiempoO)
             start_time = time.process_time()
-            paisInteres = input("Ingrese el nombre del país del cual quiere conocer los con más views:\t")
-            listaVideoViesPais=controller.VideosConMasViewsPorPais(cataOrdenPaises,paisInteres)
-            stop_time = time.process_time()
-            elapsed_time_mseg = (stop_time - start_time)*1000
-            printResultVideosByViews(listaVideoViesPais,paisInteres,numeroElementos)
-            print("El tiempo de ejecución del ordenamiento es: ",elapsed_time_mseg)
+            categoriaInteres=input("Ingrese el nombre de la categoría de interes:\t")
+            idCategoria=controller.asignarNombreCategoryToID(catalog,categoriaInteres)
+            if idCategoria==-1:
+                print("La categoría consultada no existe intente nuevamente")
+            else:
+                paisInteres = input("Ingrese el nombre del país del cual quiere conocer los videos con más views por categoría:\t")
+                listaVideoViesPais=controller.VideosConMasViewsPorPais(cataOrdenPaises,paisInteres,idCategoria)
+                stop_time = time.process_time()
+                elapsed_time_mseg = (stop_time - start_time)*1000
+                printResultVideosByViews(listaVideoViesPais,paisInteres,numeroElementos)
+                print("El tiempo de ejecución de la consulta es: ",elapsed_time_mseg)
 
     elif inputs == 3:
         if len(catalog)==0:
