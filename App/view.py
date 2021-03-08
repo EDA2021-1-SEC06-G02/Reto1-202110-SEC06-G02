@@ -44,8 +44,10 @@ def printMenu():
     print("3- Requerimiento 2")
     print("4- Requerimiento 3")
     print("5- Requerimiento 4")
+    print("Escriba cualquier otro número para detener la ejecución del programa")
 
 catalog = {}
+cataOrdenPaises = {}
 
 def initCatalog ():
     return controller.initCatalog()
@@ -62,6 +64,19 @@ def printResultVideosByViews(listaOrdenada, sample=10):
             video = lt.getElement(listaOrdenada,i)
             print(i,'- Titulo: '+ video['title'] + '. Visitas del Video: ' + video['views'] + '. Nombre del Canal: ' + video['channel_title']+'.')
             i+=1
+
+def printResultVideosPais(listaOrdenada, sample=10):
+    size = lt.size(listaOrdenada)
+    if size > sample:
+        print("Los primeros ", size, " videos ordenados por visitas son:")        
+        i=1
+        while i<= sample:
+            video = lt.getElement(listaOrdenada,i)
+            print(i,'- Titulo: '+ video['title'] + '. Pais del Video: ' + video['country'] + '. Nombre del Canal: ' + video['channel_title']+'.')
+            i+=1
+
+def VideoPaisConMasTendencia(catalog,paisInteres):
+    return controller.VideoPaisConMasTendencia(catalog,paisInteres)
 
 """
 Menu principal
@@ -96,13 +111,28 @@ while True:
         if len(catalog)==0:
             print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")
         else:
-            i=1
-            while i<= 11:
-                video = lt.getElement(catalog['video'],i)
-                print(i,'- Titulo: '+ video['title'] + '. Visitas del Video: ' + video['views'] + '. Nombre del Canal: ' + video['channel_title']+'.')
-                i+=1
+            if len(cataOrdenPaises)==0:
+                print("Estamos ordenando la lista por orden de paises esto puede tardar unos cuantos segundos")
+                tiempoO,cataOrdenPaises=controller.OrdenCatalogoPaises(catalog)
+                print("El tiempo de ejecución del ordenamiento es: ",tiempoO)
+            start_time = time.process_time()
+            paisInteres = input("Ingrese el nombre del país del cual quiere conocer el video que más días a sido tendencia:\t")
+            result,DiasEnTendencia=VideoPaisConMasTendencia(cataOrdenPaises,paisInteres)
+            stop_time = time.process_time()
+            elapsed_time_mseg = (stop_time - start_time)*1000
+            if result==-1:
+                print("El país ingresado no se encuentra en el arreglo, intente con otro país.")
+            else:
+                print("El título del video es: ",result['title'],"; el nombre del canal es: ",result['channel_title'],"; el país en el que es tendencia: ",result['country']," sus días siendo tendencia son: ",DiasEnTendencia)
+            print("El tiempo de ejecución de la consulta es: ",elapsed_time_mseg)
 
     elif inputs == 4:
+        if len(catalog)==0:
+            print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")
+        else:
+            pass
+    
+    elif inputs == 5:
         if len(catalog)==0:
             print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")
         else:

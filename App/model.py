@@ -64,11 +64,109 @@ def newCategory(id, name):
 
 # Funciones para agregar informacion al catalogo
 
+
 # Funciones para creacion de datos
 
 # Funciones de consulta
 
+def busquedaBinariaPaises(listaOrdenada, elemento):
+    i, lon = 1, lt.size(listaOrdenada)
+    elemento=elemento.lower()
+    while i <= lon:
+        m = (i + lon) // 2
+        EM = lt.getElement(listaOrdenada,m)['country'].lower()
+        if EM == elemento:
+            return m
+        elif elemento < EM:
+            lon = m - 1
+        else:
+            i = m + 1
+    return -1
+
+def busquedaBinariaID(listaOrdenada, elemento):
+    i, lon = 1, lt.size(listaOrdenada)
+    elemento=elemento.lower()
+    while i <= lon:
+        m = (i + lon) // 2
+        EM = lt.getElement(listaOrdenada,m)['video_id'].lower()
+        if EM == elemento:
+            return m
+        elif elemento < EM:
+            lon = m - 1
+        else:
+            i = m + 1
+    return -1
+
+def subListaDePais(listaOrdenada,index,elemento):
+    elemento=elemento.lower()
+    i=index-1
+    l=index+1
+    limIzq=0
+    limDer=lt.size(listaOrdenada)
+    VerIzq=True
+    VerDer=True
+    while i >= 0 and VerIzq:
+        if not(lt.getElement(listaOrdenada,i)['country'].lower()==elemento):
+            VerIzq=False
+            if i==0:
+                limIzq=i
+            else:
+                limIzq=i+1
+        i-=1
+    while l <= lt.size(listaOrdenada) and VerDer:
+        if not(lt.getElement(listaOrdenada,l)['country'].lower()==elemento):
+            VerDer=False
+            if l==lt.size(listaOrdenada):
+                limDer=l
+            else:
+                limDer=l-1
+        l+=1
+    sub_list = lt.subList(listaOrdenada, limIzq, limDer-limIzq)
+    sub_list = sub_list.copy()
+    return sub_list
+
+def VideoPaisConMasTendencia(listaOrdenada,paisInteres):
+    indexProvi=busquedaBinariaPaises(listaOrdenada,paisInteres)
+    if(indexProvi==-1):
+        return -1,0
+    else:
+        listaSoloPaises=subListaDePais(listaOrdenada,indexProvi,paisInteres)
+        listaOrdenID=VideoConMasTendencia(listaSoloPaises)
+        videoTendenciaID,DiasEnTendencia=VideoConMasDiasEnTendencia(listaOrdenID)
+        videoTendencia=lt.getElement(listaOrdenID,busquedaBinariaID(listaOrdenID,videoTendenciaID))
+        return videoTendencia,DiasEnTendencia
+
+def VideoConMasDiasEnTendencia(listaOrdenID):
+    contador=0
+    Mayor=0
+    MayorID=''
+    i=0
+    elementoComparado=lt.getElement(listaOrdenID,i)['video_id'].lower()
+    while i<=lt.size(listaOrdenID):
+        if elementoComparado==lt.getElement(listaOrdenID,i)['video_id'].lower():
+            contador+=1
+        else:
+            if contador>Mayor:
+                Mayor=contador
+                MayorID=elementoComparado
+            elementoComparado=lt.getElement(listaOrdenID,i)['video_id'].lower()
+            contador=1
+        i+=1
+    return MayorID,Mayor
+
+def VideoConMasTendencia(listaOrdenada):
+    return VideosByID(listaOrdenada)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def cmpVideosByViews(video1, video2):
+    return (float(video1['views']) < float(video2['views']))
+
+def cmpByCountry(video1, video2):
+    return ((video1['country']).lower() < (video2['country']).lower())
+
+def cmpByID(video1, video2):
+    return ((video1['video_id']).lower() < (video2['video_id']).lower())
 
 # Funciones de ordenamiento
 
@@ -81,8 +179,20 @@ def VideosByViews(catalog, numElementos):
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg, sorted_list
 
-def cmpVideosByViews(video1, video2):
-    return (float(video1['views']) < float(video2['views']))
+def VideosByCountry(catalog):
+    sub_list = lt.subList(catalog['video'], 0, lt.size(catalog['video']))
+    sub_list = sub_list.copy()
+    start_time = time.process_time()
+    sorted_list = Merge.sort(sub_list, cmpByCountry)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return elapsed_time_mseg, sorted_list
+
+def VideosByID(listaOrdenada):
+    sub_list = lt.subList(listaOrdenada, 0, lt.size(listaOrdenada))
+    sub_list = sub_list.copy()
+    sorted_list = Merge.sort(sub_list, cmpByID)
+    return sorted_list
 
 
 
