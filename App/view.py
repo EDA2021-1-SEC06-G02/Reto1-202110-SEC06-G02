@@ -55,24 +55,14 @@ def initCatalog ():
 def loadData(catalog):
     controller.loadData(catalog)
 
-def printResultVideosByViews(listaOrdenada, sample=10):
+def printResultVideosByViews(listaOrdenada, paisInteres,sample=10):
     size = lt.size(listaOrdenada)
     if size > sample:
-        print("Los primeros ", size, " videos ordenados por visitas son:")        
+        print("Los primeros ", size, " videos ordenados por visitas del pais ", paisInteres," son:")        
         i=1
         while i<= sample:
             video = lt.getElement(listaOrdenada,i)
             print(i,'- Titulo: '+ video['title'] + '. Visitas del Video: ' + video['views'] + '. Nombre del Canal: ' + video['channel_title']+'.')
-            i+=1
-
-def printResultVideosPais(listaOrdenada, sample=10):
-    size = lt.size(listaOrdenada)
-    if size > sample:
-        print("Los primeros ", size, " videos ordenados por visitas son:")        
-        i=1
-        while i<= sample:
-            video = lt.getElement(listaOrdenada,i)
-            print(i,'- Titulo: '+ video['title'] + '. Pais del Video: ' + video['country'] + '. Nombre del Canal: ' + video['channel_title']+'.')
             i+=1
 
 def VideoPaisConMasTendencia(catalog,paisInteres):
@@ -99,21 +89,35 @@ while True:
         if len(catalog)==0:
             print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")
         else:
-            numeroElementos= int(input("¿Cuantos elementos quiere comparar?:\t"))
-            if numeroElementos>lt.size(catalog['video']):
-                print("Está tratando de comparar más elementos de los que cuenta el catálogo de videos. El máximo de videos que se pueden comprar son: ",lt.size(catalog['video']))
-            else:
-                tiempo,listaOrdenada = controller.VideosByViews(catalog,numeroElementos)
-                printResultVideosByViews(listaOrdenada)
-                print("El tiempo de ejecución del ordenamiento es: ",tiempo)
+            numeroElementos= int(input("¿Cuantos videos con más views desea conocer?:\t"))
+            while numeroElementos>lt.size(catalog['video']) or numeroElementos<=0 :
+                print("Está tratando de comparar más o menos elementos de los que cuenta el catálogo de videos. El máximo de videos que se pueden comprar son: ",lt.size(catalog['video']), ". El mínimo es 1.")
+                numeroElementos= int(input("¿Cuantos elementos quiere comparar?:\t"))
+            if len(cataOrdenPaises)==0:
+                start_time = time.process_time()
+                print("Estamos ordenando la lista por orden de paises esto puede tardar unos cuantos segundos")
+                cataOrdenPaises=controller.OrdenCatalogoPaises(catalog)
+                stop_time = time.process_time()
+                tiempoO = (stop_time - start_time)*1000
+                print("El tiempo de ejecución del ordenamiento es: ",tiempoO)
+            start_time = time.process_time()
+            paisInteres = input("Ingrese el nombre del país del cual quiere conocer los con más views:\t")
+            listaVideoViesPais=controller.VideosConMasViewsPorPais(cataOrdenPaises,paisInteres)
+            stop_time = time.process_time()
+            elapsed_time_mseg = (stop_time - start_time)*1000
+            printResultVideosByViews(listaVideoViesPais,paisInteres,numeroElementos)
+            print("El tiempo de ejecución del ordenamiento es: ",elapsed_time_mseg)
 
     elif inputs == 3:
         if len(catalog)==0:
             print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")
         else:
             if len(cataOrdenPaises)==0:
+                start_time = time.process_time()
                 print("Estamos ordenando la lista por orden de paises esto puede tardar unos cuantos segundos")
-                tiempoO,cataOrdenPaises=controller.OrdenCatalogoPaises(catalog)
+                cataOrdenPaises=controller.OrdenCatalogoPaises(catalog)
+                stop_time = time.process_time()
+                tiempoO = (stop_time - start_time)*1000
                 print("El tiempo de ejecución del ordenamiento es: ",tiempoO)
             start_time = time.process_time()
             paisInteres = input("Ingrese el nombre del país del cual quiere conocer el video que más días a sido tendencia:\t")

@@ -157,10 +157,20 @@ def VideoConMasDiasEnTendencia(listaOrdenID):
 def VideoConMasTendencia(listaOrdenada):
     return VideosByID(listaOrdenada)
 
+def VideosConMasViewsPorPais(listaOrdenada,paisInteres):
+    indexProvi=busquedaBinariaPaises(listaOrdenada,paisInteres)
+    if(indexProvi==-1):
+        return -1,0
+    else:
+        listaSoloPaises=subListaDePais(listaOrdenada,indexProvi,paisInteres)
+        listaPaisViews=VideosByViews(listaSoloPaises)
+    return listaPaisViews
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def cmpVideosByViews(video1, video2):
-    return (float(video1['views']) < float(video2['views']))
+    return (float(video1['views']) > float(video2['views']))
 
 def cmpByCountry(video1, video2):
     return ((video1['country']).lower() < (video2['country']).lower())
@@ -170,23 +180,17 @@ def cmpByID(video1, video2):
 
 # Funciones de ordenamiento
 
-def VideosByViews(catalog, numElementos):
-    sub_list = lt.subList(catalog['video'], 0, numElementos)
+def VideosByViews(listaOrdenada):
+    sub_list = lt.subList(listaOrdenada, 0, lt.size(listaOrdenada))
     sub_list = sub_list.copy()
-    start_time = time.process_time()
     sorted_list = Merge.sort(sub_list, cmpVideosByViews)
-    stop_time = time.process_time()
-    elapsed_time_mseg = (stop_time - start_time)*1000
-    return elapsed_time_mseg, sorted_list
+    return sorted_list
 
 def VideosByCountry(catalog):
     sub_list = lt.subList(catalog['video'], 0, lt.size(catalog['video']))
     sub_list = sub_list.copy()
-    start_time = time.process_time()
     sorted_list = Merge.sort(sub_list, cmpByCountry)
-    stop_time = time.process_time()
-    elapsed_time_mseg = (stop_time - start_time)*1000
-    return elapsed_time_mseg, sorted_list
+    return sorted_list
 
 def VideosByID(listaOrdenada):
     sub_list = lt.subList(listaOrdenada, 0, lt.size(listaOrdenada))
