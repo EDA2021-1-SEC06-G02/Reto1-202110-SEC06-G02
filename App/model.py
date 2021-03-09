@@ -280,18 +280,3 @@ def CategoryByName(catalog):
     sorted_list = Merge.sort(sub_list, cmpCategoryByName)
     return sorted_list
 
-
-
-
-"""    categories = video['category'].split(",")
-    for category in categories:
-        addVideoCategory(catalog, category.strip(), video)
-def addVideoCategory(catalog, category_id, video):
-    categories = catalog['category']
-    positioncategory = lt.isPresent(categories, category_id)
-    if positioncategory > 0:
-        category = lt.getElement(categories, positioncategory)
-    else:
-        category = newCategory(category_id)
-        lt.addLast(categories, category)
-    lt.addLast(category['category'], video)"""
