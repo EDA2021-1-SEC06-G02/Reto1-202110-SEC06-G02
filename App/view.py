@@ -48,6 +48,7 @@ def printMenu():
 
 catalog = {}
 cataOrdenPaises = {}
+cataOrdenCategorias = {}
 
 def initCatalog ():
     return controller.initCatalog()
@@ -73,6 +74,9 @@ def printTodasLasCategorias(catalog):
     while i<=lt.size(catalog['category']):
         print(i,'-ID: ',lt.getElement(catalog['category'],i)['Category_id'],'; Name: ',lt.getElement(catalog['category'],i)['name'])
         i+=1
+
+def VideoCategoriaConMasTendencia(catalog, catalogOrdenado,categoria):
+    return controller.VideoCategoriaConMasTendencia(catalog,catalogOrdenado,categoria)
 
 """
 Menu principal
@@ -147,8 +151,23 @@ while True:
         if len(catalog)==0:
             print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")
         else:
-            pass
-    
+            #BIEN
+            if len(cataOrdenCategorias)==0:
+                print("Estamos ordenando la lista por orden de categorias, esto puede tardar unos cuantos segundos")
+                tiempoO,cataOrdenCategorias=controller.OrdenCatalogoCategorias(catalog)
+                print("El tiempo de ejecución del ordenamiento es: ",tiempoO)
+            #
+            categoria = input("Ingrese el nombre de la categoria de la cual quiere conocer el video que más días a sido tendencia:\t")
+            start_time = time.process_time()
+            result,DiasEnTendencia=VideoCategoriaConMasTendencia(catalog,cataOrdenCategorias,categoria)
+            stop_time = time.process_time()
+            elapsed_time_mseg = (stop_time - start_time)*1000
+            if result==-1:
+                print("La categoria ingresada no se encuentra en el arreglo, intente con otra categoria.")
+            else:
+                print("El título del video es: ",result['title'],"; el nombre del canal es: ",result['channel_title'],"; el id de la categoria es: ",result['category_id'],"; sus días siendo tendencia son: ",DiasEnTendencia)
+            print("El tiempo de ejecución de la consulta es: ",elapsed_time_mseg)
+
     elif inputs == 5:
         if len(catalog)==0:
             print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")

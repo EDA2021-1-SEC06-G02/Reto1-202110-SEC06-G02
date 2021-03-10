@@ -55,11 +55,17 @@ def loadCategories(catalog):
 def OrdenCatalogoPaises(catalog):
     return model.VideosByCountry(catalog)
 
+def OrdenCatalogoCategorias(catalog):
+    return model.VideosByCategory(catalog)
+
 def VideoPaisConMasTendencia(catalog,paisInteres):
     return model.VideoPaisConMasTendencia(catalog, paisInteres)
 
 def VideosConMasViewsPorPais(catalog,paisInteres,idCategoria):
     return model.VideosConMasViewsPorPais(catalog,paisInteres,idCategoria)
+def VideoCategoriaConMasTendencia(catalog,catalogOrdenado,categoria):
+    return model.VideoCategoriaConMasTendencia(catalog, catalogOrdenado, categoria)
+
 
 # Funciones de consulta sobre el catálogo
 
