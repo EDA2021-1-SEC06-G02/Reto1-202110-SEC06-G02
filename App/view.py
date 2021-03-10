@@ -60,9 +60,9 @@ def printResultVideosByViews(listaOrdenada, paisInteres,sample=10):
     size = lt.size(listaOrdenada)
     if size <= sample:
         print("No se pueden imprimir los videos que se están buscando debido a que exceden el número de muestras disponibles para alguno de los parámetros ingresados.")
-        print("Los primeros ", size, " videos con más likes del pais ", paisInteres," son para el tag ",TagInteres," son:")        
+        print("Los primeros ", size, " videos con más likes del pais ", paisInteres," son:")        
     else:
-        print("Los primeros ", sample, " videos con más likes del pais ", paisInteres," son para el tag ",TagInteres," son:")        
+        print("Los primeros ", sample, " videos con más likes del pais ", paisInteres," son:")        
     i=1
     while i<= sample:
         video = lt.getElement(listaOrdenada,i)
