@@ -85,9 +85,10 @@ def busquedaBinariaPaises(listaOrdenada, elemento):
 
 def busquedaBinariaCategorias(listaOrdenada, elemento):
     i, lon = 1, lt.size(listaOrdenada)
+    elemento=elemento.lower()
     while i <= lon:
         m = (i + lon) // 2
-        EM = lt.getElement(listaOrdenada,m)['category_id']
+        EM = lt.getElement(listaOrdenada,m)['category_id'].lower()
         if EM == elemento:
             return m
         elif elemento < EM:
@@ -147,7 +148,7 @@ def subListaDeCategoria(listaOrdenada,index,elemento):
     VerIzq=True
     VerDer=True
     while i >= 0 and VerIzq:
-        if not(lt.getElement(listaOrdenada,i)['category_id'].strip().lower()==elemento):
+        if not(lt.getElement(listaOrdenada,i)['category_id'].lower()==elemento):
             VerIzq=False
             if i==0:
                 limIzq=i
@@ -155,7 +156,7 @@ def subListaDeCategoria(listaOrdenada,index,elemento):
                 limIzq=i+1
         i-=1
     while l <= lt.size(listaOrdenada) and VerDer:
-        if not(lt.getElement(listaOrdenada,l)['category_id'].strip().lower()==elemento):
+        if not(lt.getElement(listaOrdenada,l)['category_id'].lower()==elemento):
             VerDer=False
             if l==lt.size(listaOrdenada):
                 limDer=l
@@ -194,10 +195,11 @@ def VideoCategoriaConMasTendencia(catalog,listaOrdenada,categoria):
         return -1,0
     else:
         indexProvi=busquedaBinariaCategorias(listaOrdenada,IdCategoria)
-        listaSoloCategorias=subListaDeCategoria(listaOrdenada,indexProvi,IdCategoria)
-        listaOrdenID=VideoConMasTendencia(listaSoloCategorias)
-        listaOrdenDate=VideoConMasTendenciaCate(listaOrdenID)
-        videoTendenciaID,DiasEnTendencia=VideoConMasDiasEnTendenciaCate(listaOrdenDate)
+        listaSoloCategoria=subListaDeCategoria(listaOrdenada,indexProvi,IdCategoria)
+        print("size solo categoria:",lt.size(listaSoloCategoria))
+        listaOrdenID=VideoConMasTendencia(listaSoloCategoria)
+        listaOrdenDate=VideosPorDate(listaOrdenID)
+        videoTendenciaID,DiasEnTendencia=VideoConMasDiasEnTendenciaCategoria(listaOrdenDate)
         videoTendencia=lt.getElement(listaOrdenDate,busquedaBinariaID(listaOrdenDate,videoTendenciaID))
     return videoTendencia,DiasEnTendencia
 
@@ -219,18 +221,14 @@ def VideoConMasDiasEnTendencia(listaOrdenID):
         i+=1
     return MayorID,Mayor
 
-def VideoConMasDiasEnTendenciaCate(listaOrdenID):
+def VideoConMasDiasEnTendenciaCategoria(listaOrdenID):
     contador=0
     Mayor=0
     MayorID=''
-    i=0
+    i=1
     elementoComparado=lt.getElement(listaOrdenID,i)
     while i<=lt.size(listaOrdenID):
         if elementoComparado['video_id'].lower()==lt.getElement(listaOrdenID,i)['video_id'].lower():
-            """if i != 0:
-                if elementoComparado['trending_date']!=lt.getElement(listaOrdenID,i-1)['trending_date']:
-                    contador+=1
-            else:"""
             contador+=1
         else:
             if contador>Mayor:
@@ -244,8 +242,8 @@ def VideoConMasDiasEnTendenciaCate(listaOrdenID):
 def VideoConMasTendencia(listaOrdenada):
     return VideosByID(listaOrdenada)
 
-def VideoConMasTendenciaCate(listaOrdenada):
-    return VideosByTrending(listaOrdenada)
+def VideosPorDate(listaOrdenada):
+    return VideosByTDate(listaOrdenada)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -261,28 +259,12 @@ def cmpByCategory(video1, video2):
 def cmpByID(video1, video2):
     return ((video1['video_id']).lower() < (video2['video_id']).lower())
 
-def cmpByTrendingDate(video1, video2):
-    video1Fecha = (video1['trending_date']).split(".")
-    video2Fecha = (video2['trending_date']).split(".")
-    """if int(video1Fecha[0])>int(video2Fecha[0]):
-        return  True
-    elif int(video1Fecha[0])<int(video2Fecha[0]):
-        return False
-    else:
-        if int(video1Fecha[2])>int(video2Fecha[2]):
-            return True
-        elif int(video1Fecha[2])<int(video2Fecha[2]):
-            return False
-        else:
-            if int(video1Fecha[1])>int(video2Fecha[1]):
-                return True
-            elif int(video1Fecha[1])<int(video2Fecha[1]):
-                return False
-            else:
-                return True"""
-    Fecha1_dias = int(video1Fecha[0])*365 + int(video2Fecha[1]) + int(video1Fecha[2])*30
-    Fecha2_dias = int(video2Fecha[0])*365 + int(video2Fecha[1]) + int(video2Fecha[2])*30
-    return (Fecha1_dias < Fecha2_dias)
+def cmpByTDate(video1, video2):
+    FechaVideo1 = video1['trending_date'].split(".")
+    FechaVideo2 = video2['trending_date'].split(".")
+    Fecha1Dias = FechaVideo1[0]*365 + FechaVideo1[2]*30 + FechaVideo1[1]
+    Fecha2Dias = FechaVideo2[0]*365 + FechaVideo2[2]*30 + FechaVideo2[1]
+    return (Fecha1Dias < Fecha2Dias)
 
 # Funciones de ordenamiento
 
@@ -319,46 +301,24 @@ def VideosByID(listaOrdenada):
     sorted_list = Merge.sort(sub_list, cmpByID)
     return sorted_list
 
-def VideosByTrending(listaOrdenada):
-    listaOrdenada = listaOrdenada.copy()
-    listaOrdenada2 = lt.newList('ARRAY_LIST')
+def VideosByTDate(listaOrdenada):
+    ListaOrdenaDates = lt.newList("ARRAY_LIST")
     inicio = 1
     fin = 0
-    i = 1
+    i = 0
     ID = lt.getElement(listaOrdenada,i)["video_id"]
     while i < lt.size(listaOrdenada):
-        if(lt.getElement(listaOrdenada,i)["video_id"] == ID):
-            fin +=1
-        else: 
-            sub_list = lt.subList(listaOrdenada,inicio,fin-inicio)
+        if (lt.getElement(listaOrdenada,i)["video_id"] == ID):
+            fin += 1
+        else:
+            sub_list = lt.subList(listaOrdenada, inicio-1, fin-inicio)
             sub_list = sub_list.copy()
-            sorted_list = Merge.sort(sub_list, cmpByTrendingDate)
+            sorted_list = Merge.sort(sub_list, cmpByTDate)
             j = 0
             while j < lt.size(sorted_list):
-                lt.addLast(listaOrdenada2,lt.getElement(sorted_list,j))
-                j +=1
-            #print("Ordenado", ID, inicio,"-",fin)
-            inicio = i
-            fin = inicio-1
+                lt.addLast(ListaOrdenaDates,lt.getElement(sorted_list,j))
+                j += 1
+            inicio = fin
             ID = lt.getElement(listaOrdenada,i)["video_id"]
-        i +=1
-    print(lt.getElement(listaOrdenada,1))
-    print("\n")
-    print(lt.getElement(listaOrdenada2,1))
-    print("\n")
-    return listaOrdenada2
-
-
-
-"""    categories = video['category'].split(",")
-    for category in categories:
-        addVideoCategory(catalog, category.strip(), video)
-def addVideoCategory(catalog, category_id, video):
-    categories = catalog['category']
-    positioncategory = lt.isPresent(categories, category_id)
-    if positioncategory > 0:
-        category = lt.getElement(categories, positioncategory)
-    else:
-        category = newCategory(category_id)
-        lt.addLast(categories, category)
-    lt.addLast(category['category'], video)"""
+        i += 1
+    return ListaOrdenaDates
