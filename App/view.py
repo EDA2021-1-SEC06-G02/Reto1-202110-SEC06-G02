@@ -195,7 +195,6 @@ while True:
             else:
                 printResultVideosByLikes(listaVideoLikesTag,paisInteres,TagInteres,numeroElementos)
                 print("El tiempo de ejecución de la consulta es: ",elapsed_time_mseg)
-
     else:
         sys.exit(0)
 sys.exit(0)
