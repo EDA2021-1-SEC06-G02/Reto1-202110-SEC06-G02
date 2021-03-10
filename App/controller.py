@@ -67,6 +67,9 @@ def VideoCategoriaConMasTendencia(catalog,catalogOrdenado,categoria):
     return model.VideoCategoriaConMasTendencia(catalog, catalogOrdenado, categoria)
 
 
+def VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroElementos):
+    return model.VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroElementos)
+
 # Funciones de consulta sobre el catálogo
 
 def asignarNombreCategoryToID(catalog,elemento):
