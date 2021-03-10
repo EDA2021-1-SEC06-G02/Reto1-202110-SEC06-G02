@@ -66,69 +66,6 @@ def newCategory(id, name):
 
 # Funciones para creacion de datos
 
-""" Puede servir para algo en un futuro, pero excede el limite de tiempo de lejos :v toco hacer un in :v
-def newlistaTags():
-    listaTags = {'tags': None}
-    listaTags['tags'] = lt.newList('ARRAY_LIST',cmpfunction=cmpTags)
-    return listaTags
-
-def newtag(tagName):
-    tag = {'name': "", "videos": None}
-    tag['name'] = tagName
-    tag['videos'] = lt.newList('ARRAY_LIST')
-    return tag
-
-def addVideoTags(catalog, tagName, video):
-    tags = catalog['tags']
-    postag = lt.isPresent(tags, tagName)
-    if postag > 0:
-        tag = lt.getElement(tags, postag)
-    else:
-        tag = newtag(tagName)
-        lt.addLast(tags, tag)
-    lt.addLast(tag['videos'], video)
-
-# Funciones de consulta
-
-def tagsEnVideos(listaOrdenada):
-    taglist=newlistaTags()
-    listaPorNombre=VideosByID(listaOrdenada)
-    listaSinRepetidos=listaIDSinRepetidos(listaPorNombre)
-    i=1
-    print(lt.size(taglist['tags']))
-    while i<lt.size(listaSinRepetidos):
-        tags=lt.getElement(listaSinRepetidos,i)['tags'].split("|")
-        for tag in tags:
-            addVideoTags(taglist,tag.strip(""),lt.getElement(listaSinRepetidos,i)['video_id'])
-        print(i)
-        i+=1
-    print(lt.size(taglist))
-    return taglist
-
-def getVideosByTags(listaTags, tagName):
-    postag = lt.isPresent(listaTags['name'], tagName)
-    if postag > 0:
-        tag = lt.getElement(listaTags['name'], postag)
-        return tag
-    return -1
-"""
-def listaIDSinRepetidos(listaOrdenada):
-    sub_lista = lt.subList(listaOrdenada, 0, lt.size(listaOrdenada))
-    sub_lista = sub_lista.copy()
-    i=2
-    IDvideoGuia1=lt.getElement(sub_lista,1)
-    while i<=lt.size(sub_lista):
-        IDvideoGuia2=lt.getElement(sub_lista,i)
-        if IDvideoGuia1['video_id'].lower()==IDvideoGuia2['video_id'].lower():
-            if IDvideoGuia1['likes']>IDvideoGuia2['likes']:
-                lt.deleteElement(sub_lista,i)
-            else:
-                lt.deleteElement(sub_lista,i-1)
-        else:
-            IDvideoGuia1=lt.getElement(sub_lista,i)
-            i+=1
-    return sub_lista
-
 def busquedaBinariaPaises(listaOrdenada, elemento):
     i, lon = 1, lt.size(listaOrdenada)
     elemento=elemento.lower()
@@ -245,11 +182,14 @@ def VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroEleme
         listaSoloPaises=VideosBylikes(listaSoloPaises)
         listaPaisLikesTags = lt.newList('ARRAY_LIST',cmpfunction=compareExistenceID)
         i=1
-        while (i<=lt.size(listaSoloPaises)):
+        verifica = True
+        while ((i<=lt.size(listaSoloPaises)) and verifica):
             if TagInteres in lt.getElement(listaSoloPaises,i)['tags']:
                 posElemento = lt.isPresent(listaPaisLikesTags,lt.getElement(listaSoloPaises,i)['video_id'])
                 if not(posElemento>0):
                     lt.addLast(listaPaisLikesTags,lt.getElement(listaSoloPaises,i))
+                    if lt.size(listaPaisLikesTags)==numeroElementos:
+                        verifica=False
             i+=1
     return listaPaisLikesTags
 
@@ -373,4 +313,3 @@ def CategoryByName(catalog):
     sub_list = sub_list.copy()
     sorted_list = Merge.sort(sub_list, cmpCategoryByName)
     return sorted_list
-

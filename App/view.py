@@ -57,23 +57,29 @@ def loadData(catalog):
 
 def printResultVideosByViews(listaOrdenada, paisInteres,sample=10):
     size = lt.size(listaOrdenada)
-    if size > sample:
-        print("Los primeros ", size, " videos ordenados por visitas del pais ", paisInteres," son:")        
-        i=1
-        while i<= sample:
-            video = lt.getElement(listaOrdenada,i)
-            print(i,'- Fecha de tendencia: ',video['trending_date'],'; Titulo: '+ video['title'],'; Nombre del Canal: ', video['channel_title'], '; Fecha de publicación', video['publish_time'],'; Visitas del Video: ', video['views'],'; Likes del Video: ',video['likes'],'; Dislikes del Video: ',video['dislikes'])
-            i+=1
+    if size <= sample:
+        print("No se pueden imprimir los videos que se están buscando debido a que exceden el número de muestras disponibles para alguno de los parámetros ingresados.")
+        print("Los primeros ", size, " videos con más likes del pais ", paisInteres," son para el tag ",TagInteres," son:")        
+    else:
+        print("Los primeros ", sample, " videos con más likes del pais ", paisInteres," son para el tag ",TagInteres," son:")        
+    i=1
+    while i<= sample:
+        video = lt.getElement(listaOrdenada,i)
+        print(i,'- Fecha de tendencia: ',video['trending_date'],'; Titulo: '+ video['title'],'; Nombre del Canal: ', video['channel_title'], '; Fecha de publicación', video['publish_time'],'; Visitas del Video: ', video['views'],'; Likes del Video: ',video['likes'],'; Dislikes del Video: ',video['dislikes'])
+        i+=1
 
 def printResultVideosByLikes(listaOrdenada, paisInteres, TagInteres, sample):
     size = lt.size(listaOrdenada)
-    if size > sample:
+    if size <= sample:
+        print("No se pueden imprimir los videos que se están buscando debido a que exceden el número de muestras disponibles para alguno de los parámetros ingresados.")
+        print("Los primeros ", size, " videos con más likes del pais ", paisInteres," son para el tag ",TagInteres," son:")        
+    else:
         print("Los primeros ", sample, " videos con más likes del pais ", paisInteres," son para el tag ",TagInteres," son:")        
-        i=1
-        while i<= sample:
-            video = lt.getElement(listaOrdenada,i)
-            print(i,'- Titulo: '+ video['title'],'; Nombre del Canal: ', video['channel_title'], '; Fecha de publicación', video['publish_time'],'; Visitas del Video: ', video['views'],'; Likes del Video: ',video['likes'],'; Dislikes del Video: ',video['dislikes'],'; tags del Video: ',video['tags'])
-            i+=1
+    i=1
+    while i<= sample:
+        video = lt.getElement(listaOrdenada,i)
+        print(i,'- Titulo: '+ video['title'],'; Nombre del Canal: ', video['channel_title'], '; Fecha de publicación', video['publish_time'],'; Visitas del Video: ', video['views'],'; Likes del Video: ',video['likes'],'; Dislikes del Video: ',video['dislikes'],'; tags del Video: ',video['tags'])
+        i+=1
 
 def VideoPaisConMasTendencia(catalog,paisInteres):
     return controller.VideoPaisConMasTendencia(catalog,paisInteres)

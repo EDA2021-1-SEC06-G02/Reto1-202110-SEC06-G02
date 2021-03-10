@@ -68,6 +68,3 @@ def VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroEleme
 
 def asignarNombreCategoryToID(catalog,elemento):
     return model.asignarNombreCategoryToID(catalog,elemento)
-
-def tagsEnVideos(listaOrdenada):
-    return model.tagsEnVideos(listaOrdenada)
