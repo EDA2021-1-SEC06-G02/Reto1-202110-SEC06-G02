@@ -57,8 +57,8 @@ def addCategory(catalog, category):
 
 def newCategory(id, name):
     Category = {'Category_id': '', 'name': ''}
-    Category['Category_id'] = id
-    Category['name'] = name
+    Category['Category_id'] = id.strip()
+    Category['name'] = name.strip()
     return Category
 
 
@@ -75,6 +75,19 @@ def busquedaBinariaPaises(listaOrdenada, elemento):
     while i <= lon:
         m = (i + lon) // 2
         EM = lt.getElement(listaOrdenada,m)['country'].lower()
+        if EM == elemento:
+            return m
+        elif elemento < EM:
+            lon = m - 1
+        else:
+            i = m + 1
+    return -1
+
+def busquedaBinariaCategorias(listaOrdenada, elemento):
+    i, lon = 1, lt.size(listaOrdenada)
+    while i <= lon:
+        m = (i + lon) // 2
+        EM = lt.getElement(listaOrdenada,m)['category_id']
         if EM == elemento:
             return m
         elif elemento < EM:
@@ -125,6 +138,34 @@ def subListaDePais(listaOrdenada,index,elemento):
     sub_list = sub_list.copy()
     return sub_list
 
+def subListaDeCategoria(listaOrdenada,index,elemento):
+    elemento=elemento.lower()
+    i=index-1
+    l=index+1
+    limIzq=0
+    limDer=lt.size(listaOrdenada)
+    VerIzq=True
+    VerDer=True
+    while i >= 0 and VerIzq:
+        if not(lt.getElement(listaOrdenada,i)['category_id'].strip().lower()==elemento):
+            VerIzq=False
+            if i==0:
+                limIzq=i
+            else:
+                limIzq=i+1
+        i-=1
+    while l <= lt.size(listaOrdenada) and VerDer:
+        if not(lt.getElement(listaOrdenada,l)['category_id'].strip().lower()==elemento):
+            VerDer=False
+            if l==lt.size(listaOrdenada):
+                limDer=l
+            else:
+                limDer=l-1
+        l+=1
+    sub_list = lt.subList(listaOrdenada, limIzq, limDer-limIzq)
+    sub_list = sub_list.copy()
+    return sub_list
+
 def VideoPaisConMasTendencia(listaOrdenada,paisInteres):
     indexProvi=busquedaBinariaPaises(listaOrdenada,paisInteres)
     if(indexProvi==-1):
@@ -135,6 +176,31 @@ def VideoPaisConMasTendencia(listaOrdenada,paisInteres):
         videoTendenciaID,DiasEnTendencia=VideoConMasDiasEnTendencia(listaOrdenID)
         videoTendencia=lt.getElement(listaOrdenID,busquedaBinariaID(listaOrdenID,videoTendenciaID))
         return videoTendencia,DiasEnTendencia
+
+def NombreAId (catalog,categoria):
+    id = -1
+    centi = True
+    i = 0
+    while (i < lt.size(catalog["category"]) and centi):
+        if (lt.getElement(catalog['category'],i)["name"].lower() == categoria.lower()):
+            centi = False
+            id = lt.getElement(catalog['category'],i)["Category_id"]
+        i += 1
+    return id
+
+def VideoCategoriaConMasTendencia(catalog,listaOrdenada,categoria):
+    IdCategoria = NombreAId(catalog, categoria)
+    if(IdCategoria==-1):
+        return -1,0
+    else:
+        indexProvi=busquedaBinariaCategorias(listaOrdenada,IdCategoria)
+        print(indexProvi)
+        listaSoloCategorias=subListaDeCategoria(listaOrdenada,indexProvi,IdCategoria)
+        listaOrdenID=VideoConMasTendencia(listaSoloCategorias)
+        listaOrdenID2=VideoConMasTendenciaCate(listaOrdenID)
+        videoTendenciaID,DiasEnTendencia=VideoConMasDiasEnTendenciaCate(listaOrdenID2)
+        videoTendencia=lt.getElement(listaOrdenID2,busquedaBinariaID(listaOrdenID2,videoTendenciaID))
+    return videoTendencia,DiasEnTendencia
 
 def VideoConMasDiasEnTendencia(listaOrdenID):
     contador=0
@@ -154,8 +220,33 @@ def VideoConMasDiasEnTendencia(listaOrdenID):
         i+=1
     return MayorID,Mayor
 
+def VideoConMasDiasEnTendenciaCate(listaOrdenID):
+    contador=0
+    Mayor=0
+    MayorID=''
+    i=0
+    elementoComparado=lt.getElement(listaOrdenID,i)
+    while i<=lt.size(listaOrdenID):
+        if elementoComparado['video_id'].lower()==lt.getElement(listaOrdenID,i)['video_id'].lower():
+            if i != 0:
+                if elementoComparado['trending_date']!=lt.getElement(listaOrdenID,i-1)['trending_date']:
+                    contador+=1
+            else:
+                contador+=1
+        else:
+            if contador>Mayor:
+                Mayor=contador
+                MayorID=elementoComparado['video_id'].lower()
+            elementoComparado=lt.getElement(listaOrdenID,i)
+            contador=1
+        i+=1
+    return MayorID,Mayor
+
 def VideoConMasTendencia(listaOrdenada):
     return VideosByID(listaOrdenada)
+
+def VideoConMasTendenciaCate(listaOrdenada):
+    return VideosByTrending(listaOrdenada)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -165,8 +256,18 @@ def cmpVideosByViews(video1, video2):
 def cmpByCountry(video1, video2):
     return ((video1['country']).lower() < (video2['country']).lower())
 
+def cmpByCategory(video1, video2):
+    return ((video1['category_id']).lower() < (video2['category_id']).lower())
+
 def cmpByID(video1, video2):
     return ((video1['video_id']).lower() < (video2['video_id']).lower())
+
+def cmpByTrendingDate(video1, video2):
+    video1Fecha = (video1['trending_date']).split(".")
+    video2Fecha = (video2['trending_date']).split(".")
+    Fecha1_dias = int(video1Fecha[0])*365 + int(video2Fecha[1]) + int(video1Fecha[2])*30
+    Fecha2_dias = int(video2Fecha[0])*365 + int(video2Fecha[1]) + int(video2Fecha[2])*30
+    return (Fecha1_dias < Fecha2_dias)
 
 # Funciones de ordenamiento
 
@@ -188,13 +289,37 @@ def VideosByCountry(catalog):
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg, sorted_list
 
+def VideosByCategory(catalog):
+    sub_list = lt.subList(catalog['video'], 0, lt.size(catalog['video']))
+    sub_list = sub_list.copy()
+    start_time = time.process_time()
+    sorted_list = Merge.sort(sub_list, cmpByCategory)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return elapsed_time_mseg, sorted_list
+
 def VideosByID(listaOrdenada):
     sub_list = lt.subList(listaOrdenada, 0, lt.size(listaOrdenada))
     sub_list = sub_list.copy()
     sorted_list = Merge.sort(sub_list, cmpByID)
     return sorted_list
 
-
+def VideosByTrending(listaOrdenada):
+    sub_list = lt.subList(listaOrdenada,0,lt.size(listaOrdenada))
+    inicio = 0
+    fin = 0
+    i = lt.size(sub_list)
+    while i > 0:
+        elemento = lt.getElement(sub_list,inicio)
+        while (lt.getElement(sub_list,fin)["video_id"] == elemento["video_id"]):
+            fin+=1
+        sub_list2 = lt.subList(sub_list,inicio,fin)
+        sub_list2 = sub_list2.copy()
+        sorted_list = Merge.sort(sub_list2, cmpByTrendingDate)
+        sub_list = lt.exchange(sorted_list,inicio,fin)
+        inicio=fin
+        i-=fin
+    return sub_list
 
 
 
