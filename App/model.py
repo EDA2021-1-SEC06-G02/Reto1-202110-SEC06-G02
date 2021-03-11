@@ -283,6 +283,7 @@ def VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroEleme
                     lt.addLast(listaPaisLikesTags,lt.getElement(listaSoloPaises,i))
                     if lt.size(listaPaisLikesTags)==numeroElementos:
                         verifica=False
+                i+=1
     return listaPaisLikesTags
 
 def subListaDePais(listaOrdenada,index,elemento):

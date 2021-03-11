@@ -209,13 +209,13 @@ while True:
             print("Desea conocer los resultados con videos repetidos?")
             print("1- Si")
             print("2- No")
-            opcion=input("Ingrese su selección opción:\t")
-            while not(opcion==2 or opcion==1):
+            opcion=int(input("Ingrese su selección opción:\t"))
+            while not(opcion<=2 and opcion>=1):
                 print("Opción invalida intente nuevamente")
                 print("Desea conocer los resultados con videos repetidos?")
                 print("1- Si")
                 print("2- No")
-                opcion=input("Ingrese su selección opción:\t")
+                opcion=int(input("Ingrese su selección opción:\t"))
             listaVideoLikesTag=controller.VideosConMasLikesPorPaisTag(cataOrdenPaises,paisInteres,TagInteres,numeroElementos,opcion)
             stop_time = time.process_time()
             elapsed_time_mseg = (stop_time - start_time)*1000
