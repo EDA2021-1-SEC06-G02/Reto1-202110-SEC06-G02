@@ -206,7 +206,17 @@ while True:
             TagInteres=input("Ingrese el nombre del tag que desea consultar:\t")
             paisInteres = input("Ingrese el nombre del país del cual quiere conocer los videos con más likes en el tag de interés:\t")
             print("Estamos realizando su consulta re reogamos que tenga un poco de paciencia")
-            listaVideoLikesTag=controller.VideosConMasLikesPorPaisTag(cataOrdenPaises,paisInteres,TagInteres,numeroElementos)
+            print("Desea conocer los resultados con videos repetidos?")
+            print("1- Si")
+            print("2- No")
+            opcion=input("Ingrese su selección opción:\t")
+            while not(opcion==2 or opcion==1):
+                print("Opción invalida intente nuevamente")
+                print("Desea conocer los resultados con videos repetidos?")
+                print("1- Si")
+                print("2- No")
+                opcion=input("Ingrese su selección opción:\t")
+            listaVideoLikesTag=controller.VideosConMasLikesPorPaisTag(cataOrdenPaises,paisInteres,TagInteres,numeroElementos,opcion)
             stop_time = time.process_time()
             elapsed_time_mseg = (stop_time - start_time)*1000
             if listaVideoLikesTag==-1:

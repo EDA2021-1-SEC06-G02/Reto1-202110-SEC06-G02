@@ -63,12 +63,12 @@ def VideoPaisConMasTendencia(catalog,paisInteres):
 
 def VideosConMasViewsPorPais(catalog,paisInteres,idCategoria):
     return model.VideosConMasViewsPorPais(catalog,paisInteres,idCategoria)
+
 def VideoCategoriaConMasTendencia(catalog,catalogOrdenado,categoria):
     return model.VideoCategoriaConMasTendencia(catalog, catalogOrdenado, categoria)
 
-
-def VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroElementos):
-    return model.VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroElementos)
+def VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroElementos,opcion):
+    return model.VideosConMasLikesPorPaisTag(listaOrdenada,paisInteres,TagInteres,numeroElementos,opcion)
 
 # Funciones de consulta sobre el catálogo
 
