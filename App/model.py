@@ -233,7 +233,11 @@ def VideoConMasDiasEnTendenciaCategoria(listaOrdenID):
     elementoComparado=lt.getElement(listaOrdenID,i)
     while i<=lt.size(listaOrdenID):
         if elementoComparado['video_id'].lower()==lt.getElement(listaOrdenID,i)['video_id'].lower():
-            contador+=1
+            if (i != 1):
+                if (lt.getElement(listaOrdenID,i)['trending_date']!=lt.getElement(listaOrdenID,i-1)['trending_date']):
+                    contador+=1
+            else:
+                contador+=1
         else:
             if contador>Mayor:
                 Mayor=contador
@@ -343,8 +347,6 @@ def cmpVideosByViews(video1, video2):
 
 def cmpVideosBylikes(video1, video2):
     return (float(video1['likes']) > float(video2['likes']))
-
-
 
 def cmpByCountry(video1, video2):
     return ((video1['country']).lower() < (video2['country']).lower())
