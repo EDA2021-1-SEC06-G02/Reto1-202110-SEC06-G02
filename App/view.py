@@ -170,12 +170,10 @@ while True:
         if len(catalog)==0:
             print("No se han cargado datos al catálogo, por favor realize la opción 1 antes de proseguir.")
         else:
-            #BIEN
             if len(cataOrdenCategorias)==0:
                 print("Estamos ordenando la lista por orden de categorias, esto puede tardar unos cuantos segundos")
                 tiempoO,cataOrdenCategorias=controller.OrdenCatalogoCategorias(catalog)
                 print("El tiempo de ejecución del ordenamiento es: ",tiempoO)
-            #
             categoria = input("Ingrese el nombre de la categoria de la cual quiere conocer el video que más días a sido tendencia:\t")
             start_time = time.process_time()
             result,DiasEnTendencia=VideoCategoriaConMasTendencia(catalog,cataOrdenCategorias,categoria)
@@ -224,7 +222,6 @@ while True:
             else:
                 printResultVideosByLikes(listaVideoLikesTag,paisInteres,TagInteres,numeroElementos)
                 print("El tiempo de ejecución de la consulta es: ",elapsed_time_mseg)
-
     else:
         sys.exit(0)
 sys.exit(0)

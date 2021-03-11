@@ -200,7 +200,6 @@ def VideoCategoriaConMasTendencia(catalog,listaOrdenada,categoria):
     else:
         indexProvi=busquedaBinariaCategorias(listaOrdenada,IdCategoria)
         listaSoloCategoria=subListaDeCategoria(listaOrdenada,indexProvi,IdCategoria)
-        print("size solo categoria:",lt.size(listaSoloCategoria))
         listaOrdenID=VideoConMasTendencia(listaSoloCategoria)
         listaOrdenDate=VideosPorDate(listaOrdenID)
         videoTendenciaID,DiasEnTendencia=VideoConMasDiasEnTendenciaCategoria(listaOrdenDate)
@@ -226,24 +225,27 @@ def VideoConMasDiasEnTendencia(listaOrdenID):
     return MayorID,Mayor
 
 def VideoConMasDiasEnTendenciaCategoria(listaOrdenID):
-    contador=0
     Mayor=0
     MayorID=''
-    i=1
-    elementoComparado=lt.getElement(listaOrdenID,i)
+    i=2
+    elementoComparado=lt.getElement(listaOrdenID,1)
+    listaNueva=lt.newList('ARRAY_LIST',cmpfunction=cmpIgualdadFechas)
+    lt.addLast(listaNueva,elementoComparado)
+    contador=lt.size(listaNueva)
     while i<=lt.size(listaOrdenID):
         if elementoComparado['video_id'].lower()==lt.getElement(listaOrdenID,i)['video_id'].lower():
-            if (i != 1):
-                if (lt.getElement(listaOrdenID,i)['trending_date']!=lt.getElement(listaOrdenID,i-1)['trending_date']):
-                    contador+=1
-            else:
-                contador+=1
+            posF=lt.isPresent(listaNueva,lt.getElement(listaOrdenID,i)['trending_date'])
+            if not(posF>0):
+                lt.addLast(listaNueva,lt.getElement(listaOrdenID,i))
+                contador=lt.size(listaNueva)
         else:
             if contador>Mayor:
                 Mayor=contador
                 MayorID=elementoComparado['video_id'].lower()
+            listaNueva=lt.newList('ARRAY_LIST',cmpfunction=cmpIgualdadFechas)
             elementoComparado=lt.getElement(listaOrdenID,i)
-            contador=1
+            lt.addLast(listaNueva,elementoComparado)
+            contador=lt.size(listaNueva)
         i+=1
     return MayorID,Mayor
 
@@ -372,11 +374,17 @@ def cmpCategoryByName(categoria1, categoria2):
     return ((categoria1['name']).lower() < (categoria2['name']).lower())
 
 def cmpByTDate(video1, video2):
-    FechaVideo1 = video1['trending_date'].split(".")
-    FechaVideo2 = video2['trending_date'].split(".")
-    Fecha1Dias = FechaVideo1[0]*365 + FechaVideo1[2]*30 + FechaVideo1[1]
-    Fecha2Dias = FechaVideo2[0]*365 + FechaVideo2[2]*30 + FechaVideo2[1]
-    return (Fecha1Dias < Fecha2Dias)
+    FechaVideo1 = video1['trending_date'].strip().split(".")
+    FechaVideo2 = video2['trending_date'].strip().split(".")
+    Fecha1Dias = FechaVideo1[0]*365 + FechaVideo1[2]*31 + FechaVideo1[1]
+    Fecha2Dias = FechaVideo2[0]*365 + FechaVideo2[2]*31 + FechaVideo2[1]
+    return (Fecha1Dias<Fecha2Dias)
+
+def cmpIgualdadFechas(fecha, Lista):
+    if (fecha in Lista['trending_date']):
+        return 0
+    return -1
+
 
 def compareExistenceID(ID,Lista):
     if (ID.lower() in Lista['video_id'].lower()):
@@ -433,18 +441,18 @@ def CategoryByName(catalog):
 def VideosByTDate(listaOrdenada):
     ListaOrdenaDates = lt.newList("ARRAY_LIST")
     inicio = 1
-    fin = 0
-    i = 0
-    ID = lt.getElement(listaOrdenada,i)["video_id"]
-    while i < lt.size(listaOrdenada):
+    fin = 1
+    i = 2
+    ID = lt.getElement(listaOrdenada,1)["video_id"]
+    while i <= lt.size(listaOrdenada):
         if (lt.getElement(listaOrdenada,i)["video_id"] == ID):
             fin += 1
         else:
-            sub_list = lt.subList(listaOrdenada, inicio-1, fin-inicio)
+            sub_list = lt.subList(listaOrdenada, inicio-1, fin-inicio) #Revisar
             sub_list = sub_list.copy()
             sorted_list = Merge.sort(sub_list, cmpByTDate)
-            j = 0
-            while j < lt.size(sorted_list):
+            j = 1
+            while j <= lt.size(sorted_list):
                 lt.addLast(ListaOrdenaDates,lt.getElement(sorted_list,j))
                 j += 1
             inicio = fin
